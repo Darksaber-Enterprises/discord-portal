@@ -1,0 +1,49 @@
+:root {
+  --color-primary: #2cb2b2;
+  --color-primary-dark: #1a7a7a;
+  --color-alternate1: #dac42a;
+  --color-alternate2: #545a45; /* nicer alternate than #585e50 */
+  --background-dark: #070605;
+  --background-light: #f4f4f4;
+  --text-light: #dac42a;
+  --text-dark: #070605;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(135deg, var(--background-dark), #0e2f2f, var(--color-primary));
+  background-size: 200% 200%;
+  animation: backgroundShift 20s ease infinite;
+  color: var(--text-light);
+  font-family: Arial, sans-serif;
+}
+
+@keyframes backgroundShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+nav a {
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+nav a:hover {
+  background-color: var(--color-primary-dark);
+  color: var(--text-light);
+}
