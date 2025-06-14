@@ -1,7 +1,11 @@
+// navbar.js
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
+// Functional component to render the navigation bar
 const Navbar = () => {
+  // Style for each navigation link
   const linkStyle = {
     padding: '10px 20px',
     color: 'var(--text-light)',
@@ -9,10 +13,12 @@ const Navbar = () => {
     fontWeight: 'bold',
   };
 
+  // Style for the active navigation link
   const activeStyle = {
     color: 'var(--color-primary)',
   };
 
+  // Navigation bar container with styling
   return (
     <nav
       style={{
@@ -28,6 +34,7 @@ const Navbar = () => {
         boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
       }}
     >
+      {/* Navigation links to different routes */}
       <NavLink to="/home" style={linkStyle} activeStyle={activeStyle}>
         Home
       </NavLink>

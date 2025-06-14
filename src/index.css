@@ -1,3 +1,4 @@
+/* CSS Variables for theme colors */
 :root {
   --color-primary: #2cb2b2;
   --color-primary-dark: #1a7a7a;
@@ -9,17 +10,19 @@
   --text-dark: #070605;
 }
 
+/* Global styles for html, body, and root container */
 html, body, #root {
   margin: 0;
   padding: 0;
   height: 100%;
   background: linear-gradient(135deg, var(--background-dark), #0e2f2f, var(--color-primary));
   background-size: 200% 200%;
-  animation: backgroundShift 20s ease infinite;
+  animation: backgroundShift 20s ease infinite; /* Smooth shifting background */
   color: var(--text-light);
   font-family: Arial, sans-serif;
 }
 
+/* Animation for the shifting background gradient */
 @keyframes backgroundShift {
   0% {
     background-position: 0% 50%;
@@ -32,17 +35,20 @@ html, body, #root {
   }
 }
 
+/* Default anchor link style */
 a {
   color: var(--color-primary);
   text-decoration: none;
 }
 
+/* Styles for navigation links */
 nav a {
   padding: 8px 16px;
   border-radius: 4px;
   transition: background-color 0.3s;
 }
 
+/* Hover state for nav links */
 nav a:hover {
   background-color: var(--color-primary-dark);
   color: var(--text-light);

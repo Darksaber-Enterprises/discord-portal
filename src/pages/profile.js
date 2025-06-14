@@ -1,9 +1,13 @@
+// profile.js
+
 import React from 'react';
 import Navbar from '../components/navbar';
 
+// Profile page component to display Discord user info
 const Profile = () => {
+  // Retrieve user info from localStorage
   const user = JSON.parse(localStorage.getItem('discord_user'));
-  const nickname = localStorage.getItem('discord_nickname'); // Your stored server nickname
+  const nickname = localStorage.getItem('discord_nickname'); // Stored server nickname
 
   return (
     <div>

@@ -1,7 +1,10 @@
+// home.js
+
 import React from 'react';
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 
+// The main dashboard/home page component
 const Home = () => {
   const navigate = useNavigate();
 
@@ -17,8 +20,10 @@ const Home = () => {
         alignItems: 'center',
       }}
     >
+      {/* Navigation bar */}
       <Navbar />
 
+      {/* Main call-to-action button */}
       <button
         style={{
           marginTop: '20px',
@@ -44,6 +49,7 @@ const Home = () => {
         Submit a Request
       </button>
 
+      {/* Welcome message */}
       <h1 style={{ marginTop: '40px', textAlign: 'center' }}>
         Welcome to the Dashboard
       </h1>

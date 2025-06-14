@@ -1,7 +1,11 @@
+// SubmitRequest.js
+
 import React, { useState } from 'react';
 import Navbar from '../components/navbar';
 
+// Component for users to submit different types of requests
 const SubmitRequest = () => {
+  // Array of request types and descriptions
   const options = [
     {
       name: 'Rapid Response Force',
@@ -25,11 +29,12 @@ const SubmitRequest = () => {
     },
   ];
 
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null); // Track hovered option for tooltip
 
+  // Placeholder click handler
   const handleOptionClick = (option) => {
     alert(`You selected: ${option}`);
-    // future: navigate or open form
+    // TODO: Replace alert with form or page navigation
   };
 
   return (
@@ -52,6 +57,7 @@ const SubmitRequest = () => {
       <h2 style={{ textAlign: 'center' }}>Select a Request Type</h2>
       <p style={{ textAlign: 'center' }}>Please choose one of the following:</p>
 
+      {/* Request Option Buttons */}
       <div
         style={{
           display: 'flex',
@@ -93,12 +99,12 @@ const SubmitRequest = () => {
               {name}
             </button>
 
-            {/* Tooltip */}
+            {/* Tooltip shown on hover */}
             {hoveredIndex === index && (
               <div
                 style={{
                   position: 'absolute',
-                  top: '110%',          // tooltip now appears below button
+                  top: '110%',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   backgroundColor: 'rgba(0, 0, 0, 0.8)',

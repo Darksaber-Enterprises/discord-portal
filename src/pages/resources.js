@@ -1,6 +1,9 @@
+// resources.js
+
 import React from 'react';
 import Navbar from '../components/navbar';
 
+// Page displaying helpful development and API resources
 const Resources = () => {
   return (
     <div
@@ -8,7 +11,7 @@ const Resources = () => {
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #0c0f11 0%, #1a2d2d 100%)',
         color: 'var(--text-light)',
-        padding: '100px 20px 20px', // padding top for fixed navbar
+        padding: '100px 20px 20px', // Padding top for fixed navbar
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
