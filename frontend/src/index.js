@@ -6,9 +6,7 @@ import { RequestsProvider } from './context/RequestsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <RequestsProvider>
-      <App />
-    </RequestsProvider>
-  </React.StrictMode>
+  <RequestsProvider>
+    <App />
+  </RequestsProvider>
 );
