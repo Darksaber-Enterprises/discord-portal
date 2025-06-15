@@ -156,3 +156,14 @@ img, video {
     transform: rotate(360deg);
   }
 }
+
+.role-panel {
+  background: rgba(17, 17, 17, 0.6); /* transparent */
+  transition: background 0.3s ease;
+  /* optional box shadow for better visibility */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+.role-panel:hover {
+  background: rgba(17, 17, 17, 0.85); /* less transparent on hover */
+}

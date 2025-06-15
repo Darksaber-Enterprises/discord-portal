@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import colors from '../colors';
 
@@ -8,7 +7,6 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!position) {
