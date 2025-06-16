@@ -17,7 +17,7 @@ export default function ProfileWrapper() {
 
     fetch('/api/discord/user', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Fix template literal here
       },
     })
       .then((res) => {

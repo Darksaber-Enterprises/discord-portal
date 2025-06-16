@@ -8,121 +8,111 @@ const SERVICE_ROLES = {
   Cargo: '1340563113774420079',
   Construction: '1340563229151072387',
 };
-const RRF_ROLE = '1203993365826506752';
 
-const ALL_ROLES = [
-  RRF_ROLE,
-  ...Object.values(SERVICE_ROLES)
-];
+const RRF_ROLE = '1203993365826506752';
+const ALL_ROLES = [RRF_ROLE, ...Object.values(SERVICE_ROLES)];
 
 const Requests = ({ userToken: initialToken }) => {
   const [userToken, setUserToken] = useState(initialToken || '');
-  const [panel, setPanel] = useState(null); // 'industry' or null
+  const [panel, setPanel] = useState(null);
   const [services, setServices] = useState([]);
   const [onDutyRrf, setOnDutyRrf] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
-
-  // Store current assigned Industry roles (role IDs)
   const [currentIndustryRoles, setCurrentIndustryRoles] = useState([]);
 
   useEffect(() => {
-    if (!initialToken) {
-      const stored = localStorage.getItem('access_token');
-      if (stored) {
-        setUserToken(stored);
-        checkUserRoles(stored);
-      } else {
-        alert('You must be signed in to assign roles.');
-      }
-    } else {
-      checkUserRoles(initialToken);
+    const stored = initialToken || localStorage.getItem('access_token');
+    if (!stored) {
+      alert('You must be signed in to assign roles.');
+      return;
     }
+
+    setUserToken(stored);
+    checkUserRoles(stored);
   }, [initialToken]);
 
   const checkUserRoles = async (token) => {
     try {
       const res = await fetch('/api/discord/user', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }, // Fixed template literal
       });
+
       if (!res.ok) throw new Error('Failed to fetch user roles');
       const data = await res.json();
 
-      // Check RRF role
-      const hasRrf = data.roles.some(role => role.id === RRF_ROLE);
+      const userRoleIds = data.roles.map((role) => role.id);
+      const hasRrf = userRoleIds.includes(RRF_ROLE);
       setOnDutyRrf(hasRrf);
 
-      // Check Industry roles user currently has
-      const userRoleIds = data.roles.map(role => role.id);
-      const assignedIndustryRoles = Object.values(SERVICE_ROLES).filter(roleId =>
+      const assignedIndustryRoles = Object.values(SERVICE_ROLES).filter((roleId) =>
         userRoleIds.includes(roleId)
       );
+
       setCurrentIndustryRoles(assignedIndustryRoles);
 
-      // Set initial checkbox states accordingly
-      const assignedServiceNames = Object.entries(SERVICE_ROLES)
+      const assignedServices = Object.entries(SERVICE_ROLES)
         .filter(([name, roleId]) => assignedIndustryRoles.includes(roleId))
         .map(([name]) => name);
-      setServices(assignedServiceNames);
+
+      setServices(assignedServices);
     } catch (err) {
       console.error('Error checking user roles:', err);
     }
   };
 
-  const toggleService = name =>
-    setServices(prev =>
-      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
+  const toggleService = (name) =>
+    setServices((prev) =>
+      prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
     );
 
   const assignRoles = async (roleIds) => {
-    if (!userToken) throw new Error('No token available for authentication.');
     const res = await fetch('/api/discord/assign-roles', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userToken}`,
+        Authorization: `Bearer ${userToken}`, // Fixed template literal
       },
       body: JSON.stringify({ roles: roleIds }),
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error('[ERROR] Role assignment failed:', errorText);
-      throw new Error('Failed to assign roles: ' + errorText);
+      const error = await res.text();
+      console.error('[ERROR] Assign roles failed:', error);
+      throw new Error('Failed to assign roles: ' + error);
     }
 
     return await res.json();
   };
 
   const removeRoles = async (roleIds) => {
-    if (!userToken) throw new Error('No token available for authentication.');
     for (const roleId of roleIds) {
-      const res = await fetch(`/api/discord/remove-role`, {
+      const res = await fetch('/api/discord/remove-role', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${userToken}`, // Fixed template literal
         },
         body: JSON.stringify({ role: roleId }),
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error('[ERROR] Role removal failed:', errorText);
-        throw new Error('Failed to remove roles: ' + errorText);
+        const error = await res.text();
+        console.error('[ERROR] Remove role failed:', error);
+        throw new Error('Failed to remove role: ' + error);
       }
     }
   };
 
   const handleRrfToggle = async () => {
     try {
-      if (!onDutyRrf) {
-        await assignRoles([RRF_ROLE]);
-        setOnDutyRrf(true);
-        alert('You are now on duty: RRF');
-      } else {
+      if (onDutyRrf) {
         await removeRoles([RRF_ROLE]);
         setOnDutyRrf(false);
         alert('You are now off duty: RRF');
+      } else {
+        await assignRoles([RRF_ROLE]);
+        setOnDutyRrf(true);
+        alert('You are now on duty: RRF');
       }
     } catch (e) {
       alert(e.message);
@@ -130,40 +120,32 @@ const Requests = ({ userToken: initialToken }) => {
   };
 
   const handleIndustry = () => {
-    setPanel('industry');
+    setPanel(panel === 'industry' ? null : 'industry');
   };
 
   const submitIndustry = async () => {
     try {
-      const newRoleIds = services.map(s => SERVICE_ROLES[s]);
-      const prevRoleIds = currentIndustryRoles;
+      const selectedRoleIds = services.map((s) => SERVICE_ROLES[s]);
+      const rolesToAdd = selectedRoleIds.filter((id) => !currentIndustryRoles.includes(id));
+      const rolesToRemove = currentIndustryRoles.filter((id) => !selectedRoleIds.includes(id));
 
-      const rolesToAdd = newRoleIds.filter(id => !prevRoleIds.includes(id));
-      const rolesToRemove = prevRoleIds.filter(id => !newRoleIds.includes(id));
+      if (rolesToRemove.length > 0) await removeRoles(rolesToRemove);
+      if (rolesToAdd.length > 0) await assignRoles(rolesToAdd);
 
-      if (rolesToRemove.length > 0) {
-        await removeRoles(rolesToRemove);
-      }
-      if (rolesToAdd.length > 0) {
-        await assignRoles(rolesToAdd);
-      }
-
-      setCurrentIndustryRoles(newRoleIds);
+      setCurrentIndustryRoles(selectedRoleIds);
       alert('Your Industry roles have been updated.');
       setPanel(null);
-      setServices([]);
     } catch (e) {
       alert(e.message);
     }
   };
 
-  // New: Go Off Duty removes all RRF + Industry roles
   const handleGoOffDuty = async () => {
     try {
       await removeRoles(ALL_ROLES);
       setOnDutyRrf(false);
-      setCurrentIndustryRoles([]);
       setServices([]);
+      setCurrentIndustryRoles([]);
       setPanel(null);
       alert('You are now off duty: all roles removed.');
     } catch (e) {
@@ -173,12 +155,13 @@ const Requests = ({ userToken: initialToken }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      
       <Navbar />
       <div
         style={{
           width: sidebarHovered ? 260 : 50,
-          background: '#111',
-          color: '#eee',
+          background: '#1a1a1a',
+          color: '#fff',
           transition: 'width 0.3s ease',
           overflow: 'hidden',
           whiteSpace: 'nowrap',
@@ -186,11 +169,9 @@ const Requests = ({ userToken: initialToken }) => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: sidebarHovered ? 'flex-start' : 'center',
-          paddingTop: 10,
-          paddingLeft: sidebarHovered ? 20 : 0,
-          paddingRight: sidebarHovered ? 20 : 0,
-          boxSizing: 'border-box',
+          padding: sidebarHovered ? '20px 20px 10px' : '60px 0 10px',
           userSelect: 'none',
+          fontWeight: 'bold',
         }}
         onMouseEnter={() => setSidebarHovered(true)}
         onMouseLeave={() => setSidebarHovered(false)}
@@ -199,14 +180,11 @@ const Requests = ({ userToken: initialToken }) => {
           style={{
             fontSize: 28,
             marginBottom: 20,
-            cursor: 'pointer',
-            color: '#eee',
             width: '100%',
             textAlign: sidebarHovered ? 'left' : 'center',
-            userSelect: 'none',
             lineHeight: 1,
+            marginTop: '20px',
           }}
-          aria-label="Sidebar Menu"
         >
           &#9776;
         </div>
@@ -215,23 +193,41 @@ const Requests = ({ userToken: initialToken }) => {
           <>
             <button
               onClick={handleRrfToggle}
-              style={{ ...toggleBtnStyle, background: colors.primary, color: colors.primaryDark }}
+              style={{
+                ...toggleBtnStyle,
+                background: colors.primary,
+                color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
+              }}
             >
               {onDutyRrf ? 'Go off duty RRF' : 'Go on duty RRF'}
             </button>
 
             <button
               onClick={handleIndustry}
-              style={{ ...toggleBtnStyle, background: colors.alternate1, color: colors.textDark }}
+              style={{
+                ...toggleBtnStyle,
+                background: colors.gold,
+                color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
+              }}
             >
               Go on duty Industry
             </button>
 
             <button
               onClick={handleGoOffDuty}
-              style={{ ...toggleBtnStyle, background: '#b45a5a', color: colors.textLight }}
+              style={{
+                ...toggleBtnStyle,
+                background: colors.accent, // 
+                color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
+              }}
             >
-              Go Off Duty (Remove All Roles)
+              Go Off Duty
             </button>
 
             {panel === 'industry' && (
@@ -239,7 +235,7 @@ const Requests = ({ userToken: initialToken }) => {
                 {Object.keys(SERVICE_ROLES).map((name) => (
                   <label
                     key={name}
-                    style={{ display: 'block', margin: '8px 0', cursor: 'pointer' }}
+                    style={{ display: 'block', margin: '8px 0', cursor: 'pointer', fontWeight: 'bold' }}
                   >
                     <input
                       type="checkbox"
@@ -250,6 +246,7 @@ const Requests = ({ userToken: initialToken }) => {
                     {name}
                   </label>
                 ))}
+
                 <button onClick={submitIndustry} style={submitBtnStyle}>
                   Submit Services
                 </button>
@@ -260,7 +257,7 @@ const Requests = ({ userToken: initialToken }) => {
       </div>
 
       <div style={{ flexGrow: 1, padding: 20 }}>
-        {/* Your page content */}
+        {/* Page content goes here */}
       </div>
     </div>
   );
@@ -275,6 +272,8 @@ const toggleBtnStyle = {
   cursor: 'pointer',
   fontWeight: 'bold',
   textAlign: 'left',
+  background: '#222',
+  color: '#fff',
 };
 
 const submitBtnStyle = {
@@ -286,6 +285,7 @@ const submitBtnStyle = {
   borderRadius: 6,
   cursor: 'pointer',
   width: '100%',
+  fontWeight: 'bold',
 };
 
 export default Requests;

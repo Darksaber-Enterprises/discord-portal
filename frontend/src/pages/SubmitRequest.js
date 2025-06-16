@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Navbar from '../components/navbar';
 
-// Component for users to submit different types of requests
+// SubmitRequest Component - lets users select a request type
 const SubmitRequest = () => {
-  // Array of request types and descriptions
+  // Request types and their descriptions
   const options = [
     {
       name: 'Rapid Response Force',
@@ -29,9 +29,9 @@ const SubmitRequest = () => {
     },
   ];
 
-  const [hoveredIndex, setHoveredIndex] = useState(null); // Track hovered option for tooltip
+  const [hoveredIndex, setHoveredIndex] = useState(null); // Tracks hovered button index for tooltip display
 
-  // Placeholder click handler
+  // Handler when user clicks a request type option
   const handleOptionClick = (option) => {
     alert(`You selected: ${option}`);
     // TODO: Replace alert with form or page navigation
@@ -52,12 +52,13 @@ const SubmitRequest = () => {
         position: 'relative',
       }}
     >
+      {/* Navigation bar */}
       <Navbar />
 
       <h2 style={{ textAlign: 'center' }}>Select a Request Type</h2>
       <p style={{ textAlign: 'center' }}>Please choose one of the following:</p>
 
-      {/* Request Option Buttons */}
+      {/* Container for request option buttons */}
       <div
         style={{
           display: 'flex',
@@ -75,6 +76,7 @@ const SubmitRequest = () => {
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
+            {/* Button for each request option */}
             <button
               onClick={() => handleOptionClick(name)}
               style={{
@@ -99,7 +101,7 @@ const SubmitRequest = () => {
               {name}
             </button>
 
-            {/* Tooltip shown on hover */}
+            {/* Tooltip shown when hovering over a button */}
             {hoveredIndex === index && (
               <div
                 style={{

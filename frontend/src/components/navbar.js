@@ -1,23 +1,24 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import colors from '../colors'; // adjust path if needed
 
 const Navbar = () => {
   const linkStyle = {
     padding: '10px 20px',
-    color: 'var(--text-light)',
+    color: colors.textLight,
     textDecoration: 'none',
     fontWeight: 'bold',
   };
 
   const activeStyle = {
-    color: 'var(--color-primary)',
+    color: colors.primary,
   };
 
   return (
     <nav
       style={{
         width: '100%',
-        backgroundColor: 'var(--background-dark)',
+        backgroundColor: colors.backgroundDark,
         display: 'flex',
         justifyContent: 'center',
         gap: '40px',

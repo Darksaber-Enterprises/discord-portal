@@ -1,6 +1,7 @@
 // callback.js
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import colors from '../colors';
 
 const Callback = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const Callback = () => {
   }, [navigate]);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '100px', color: '#eee' }}>
+    <div style={{ textAlign: 'center', marginTop: '100px', color: colors.textLight }}>
       <h2>Completing sign-in...</h2>
     </div>
   );

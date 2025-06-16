@@ -15,9 +15,6 @@ const Profile = () => {
       return;
     }
 
-    // Adjust fetch URL to absolute or relative to your backend server.
-    // For example, if your backend is on the same domain and port, keep "/api/discord/user"
-    // Otherwise, use full URL like "https://your-backend.com/api/discord/user"
     fetch('/api/discord/user', {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -165,9 +162,8 @@ const Profile = () => {
     }
   }
 
-  // Loading and error states handled here
-  if (loading) return <LoadingSpinner color={colors.alternate1} />;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <LoadingSpinner color={colors.gold} />;
+  if (error) return <p style={{ color: colors.accent }}>Error: {error}</p>;
   if (!user) return <p>No user data available.</p>;
 
   const displayName = user.username.toUpperCase();
@@ -187,7 +183,7 @@ const Profile = () => {
         padding: 20,
         gap: 40,
         boxSizing: 'border-box',
-        overflowY: 'visible', // Ensure page scrolls normally
+        overflowY: 'visible',
       }}
     >
       {/* Left panel - Employee Card */}
@@ -203,7 +199,7 @@ const Profile = () => {
           alignItems: 'center',
           gap: 24,
           textAlign: 'center',
-          overflow: 'visible', // no scroll
+          overflow: 'visible',
         }}
       >
         <img
@@ -251,13 +247,13 @@ const Profile = () => {
             boxShadow: `0 0 20px ${colors.primary}`,
             color: colors.textLight,
             fontSize: '1rem',
-            overflow: 'visible', // removed scroll here
+            overflow: 'visible',
             maxHeight: 'none',
           }}
         >
           <h2
             style={{
-              color: colors.alternate1,
+              color: colors.gold,
               marginBottom: 20,
               textAlign: 'center',
               letterSpacing: '0.1em',
@@ -294,8 +290,7 @@ const Profile = () => {
   );
 };
 
-// New spinner loader component
-const LoadingSpinner = ({ color = '#dac42a', size = 60 }) => (
+const LoadingSpinner = ({ color = colors.gold, size = 60 }) => (
   <div
     style={{
       position: 'fixed',
@@ -305,7 +300,7 @@ const LoadingSpinner = ({ color = '#dac42a', size = 60 }) => (
       width: size,
       height: size,
       border: `6px solid ${color}33`, // transparent border
-      borderTopColor: color, // colored border top
+      borderTopColor: color,
       borderRadius: '50%',
       animation: 'spin 1s linear infinite',
       zIndex: 9999,
@@ -324,7 +319,7 @@ const LoadingSpinner = ({ color = '#dac42a', size = 60 }) => (
 
 const InfoRow = ({ label, items }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <strong style={{ color: colors.alternate1, marginBottom: 6 }}>{label.toUpperCase()}</strong>
+    <strong style={{ color: colors.gold, marginBottom: 6 }}>{label.toUpperCase()}</strong>
     {items.length > 0 ? (
       <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
         {items.map(item => (
@@ -334,7 +329,7 @@ const InfoRow = ({ label, items }) => (
         ))}
       </ul>
     ) : (
-      <p style={{ fontStyle: 'italic', color: colors.alternate2 }}>
+      <p style={{ fontStyle: 'italic', color: colors.accent }}>
         No {label.toLowerCase()} assigned.
       </p>
     )}

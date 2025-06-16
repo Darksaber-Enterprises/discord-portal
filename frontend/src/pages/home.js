@@ -1,10 +1,9 @@
 // home.js
-
 import React from 'react';
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
+import colors from '../colors';
 
-// The main dashboard/home page component
 const Home = () => {
   const navigate = useNavigate();
 
@@ -12,26 +11,24 @@ const Home = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0c0f11 0%, #1a2d2d 100%)',
-        color: 'var(--text-light)',
+        background: `linear-gradient(135deg, ${colors.backgroundDark} 0%, ${colors.primaryDark} 100%)`,
+        color: colors.textLight,
         padding: '100px 20px 20px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      {/* Navigation bar */}
       <Navbar />
 
-      {/* Main call-to-action button */}
       <button
         style={{
           marginTop: '20px',
           padding: '10px 30px',
-          backgroundColor: 'var(--color-primary)',
+          backgroundColor: colors.primary,
           border: 'none',
           borderRadius: '6px',
-          color: 'var(--background-dark)',
+          color: colors.backgroundDark,
           cursor: 'pointer',
           fontWeight: 'bold',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
@@ -39,17 +36,16 @@ const Home = () => {
           alignSelf: 'center',
         }}
         onMouseOver={(e) =>
-          (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')
+          (e.currentTarget.style.backgroundColor = colors.primaryDark)
         }
         onMouseOut={(e) =>
-          (e.currentTarget.style.backgroundColor = 'var(--color-primary)')
+          (e.currentTarget.style.backgroundColor = colors.primary)
         }
         onClick={() => navigate('/submit-request')}
       >
         Submit a Request
       </button>
 
-      {/* Welcome message */}
       <h1 style={{ marginTop: '40px', textAlign: 'center' }}>
         Welcome to the Dashboard
       </h1>

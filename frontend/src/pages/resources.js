@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import Navbar from '../components/navbar';
 import colors from '../colors';
 
+// Leadership Application Modal Component
+// Handles the form for submitting leadership applications
 const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
   const [position, setPosition] = useState('');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Form submission handler
   const handleSubmit = async () => {
     if (!position) {
       setError('Please select a leadership position.');
@@ -34,12 +37,9 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
 
       if (!res.ok) throw new Error('Failed to submit application.');
 
-      // Instead of alert and navigation:
-      onClose(); // close modal
-      onShowPopup(); // show confirmation popup
-
-      // You can still navigate after acknowledgment if you want:
-      // navigate('/resources');
+      // Close modal and show confirmation popup on success
+      onClose();
+      onShowPopup();
 
     } catch (err) {
       setError(err.message || 'Submission failed.');
@@ -48,6 +48,7 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
   };
 
   return (
+    // Modal backdrop container
     <div
       style={{
         position: 'fixed',
@@ -58,10 +59,11 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
         alignItems: 'center',
         zIndex: 9999,
       }}
-      onClick={onClose}
+      onClick={onClose} // Close modal if backdrop clicked
     >
+      {/* Modal content container */}
       <div
-        onClick={e => e.stopPropagation()}
+        onClick={e => e.stopPropagation()} // Prevent click propagation to backdrop
         style={{
           backgroundColor: '#222',
           padding: 24,
@@ -73,6 +75,7 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
       >
         <h2 style={{ marginTop: 0 }}>Leadership Application</h2>
 
+        {/* Position selection dropdown */}
         <label style={{ display: 'block', marginBottom: 8 }}>
           Select Position:
           <select
@@ -94,6 +97,7 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
           </select>
         </label>
 
+        {/* Reason text area */}
         <label style={{ display: 'block', marginBottom: 8 }}>
           Why do you believe you are best for this job?
           <textarea
@@ -113,65 +117,68 @@ const LeadershipApplicationModal = ({ user, onClose, onShowPopup }) => {
           />
         </label>
 
+        {/* Display error message if any */}
         {error && <p style={{ color: 'tomato' }}>{error}</p>}
 
+        {/* Submit button with hover and disabled styles */}
         <button
-  onClick={handleSubmit}
-  disabled={submitting}
-  style={{
-    marginTop: 16,
-    width: '100%',
-    padding: '16px 0',
-    backgroundColor: colors.primaryLight,
-    border: 'none',
-    borderRadius: 10,
-    color: colors.primaryDark,
-    fontWeight: 'bold',
-    fontSize: '1.2rem',
-    cursor: submitting ? 'not-allowed' : 'pointer',
-    boxShadow: submitting ? 'none' : `0 0 12px ${colors.primaryLight}`,
-    opacity: submitting ? 0.6 : 1,
-    transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
-  }}
-  onMouseEnter={e => {
-    if (!submitting) {
-      e.currentTarget.style.backgroundColor = '#fff';
-      e.currentTarget.style.boxShadow = `0 0 20px ${colors.primaryLight}`;
-    }
-  }}
-  onMouseLeave={e => {
-    if (!submitting) {
-      e.currentTarget.style.backgroundColor = colors.primaryLight;
-      e.currentTarget.style.boxShadow = `0 0 12px ${colors.primaryLight}`;
-    }
-  }}
->
-  {submitting ? 'Submitting...' : 'Submit Application'}
-</button>
-
+          onClick={handleSubmit}
+          disabled={submitting}
+          style={{
+            marginTop: 16,
+            width: '100%',
+            padding: '16px 0',
+            backgroundColor: colors.primaryLight,
+            border: 'none',
+            borderRadius: 10,
+            color: colors.primaryDark,
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            cursor: submitting ? 'not-allowed' : 'pointer',
+            boxShadow: submitting ? 'none' : `0 0 12px ${colors.primaryLight}`,
+            opacity: submitting ? 0.6 : 1,
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+          }}
+          onMouseEnter={e => {
+            if (!submitting) {
+              e.currentTarget.style.backgroundColor = '#fff';
+              e.currentTarget.style.boxShadow = `0 0 20px ${colors.primaryLight}`;
+            }
+          }}
+          onMouseLeave={e => {
+            if (!submitting) {
+              e.currentTarget.style.backgroundColor = colors.primaryLight;
+              e.currentTarget.style.boxShadow = `0 0 12px ${colors.primaryLight}`;
+            }
+          }}
+        >
+          {submitting ? 'Submitting...' : 'Submit Application'}
+        </button>
       </div>
     </div>
   );
 };
 
-// New Popup component
+// Popup shown after successful submission, with acknowledgment button
 const SubmissionPopup = ({ onAcknowledge }) => {
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 30,
-      right: 30,
-      backgroundColor: colors.primaryLight,
-      color: colors.primaryDark,
-      padding: '16px 24px',
-      borderRadius: 8,
-      boxShadow: '0 0 15px rgba(0,0,0,0.3)',
-      animation: 'fadeIn 0.5s ease forwards',
-      zIndex: 10000,
-      minWidth: 280,
-      textAlign: 'center',
-      userSelect: 'none',
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 30,
+        right: 30,
+        backgroundColor: colors.primaryLight,
+        color: colors.primaryDark,
+        padding: '16px 24px',
+        borderRadius: 8,
+        boxShadow: '0 0 15px rgba(0,0,0,0.3)',
+        animation: 'fadeIn 0.5s ease forwards',
+        zIndex: 10000,
+        minWidth: 280,
+        textAlign: 'center',
+        userSelect: 'none',
+      }}
+    >
       <p style={{ margin: '0 0 12px', fontWeight: 'bold' }}>
         Your application has been submitted to the Executives for review.
       </p>
@@ -190,6 +197,7 @@ const SubmissionPopup = ({ onAcknowledge }) => {
         Acknowledge
       </button>
 
+      {/* CSS animation */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
@@ -200,6 +208,7 @@ const SubmissionPopup = ({ onAcknowledge }) => {
   );
 };
 
+// Resource box component - used to display resource sections
 const ResourceBox = ({ title, color, children, isApplication, onLeadershipClick }) => {
   const applicationBg = '#f7f7f7';
 
@@ -290,7 +299,9 @@ const ResourceBox = ({ title, color, children, isApplication, onLeadershipClick 
   );
 };
 
+// Main Resources Page Component
 const Resources = () => {
+  // Hardcoded user info (can be replaced with auth data)
   const user = {
     username: 'TestUser#1234',
     avatarUrl: 'https://cdn.discordapp.com/embed/avatars/0.png',
@@ -299,7 +310,9 @@ const Resources = () => {
   const [showLeadershipModal, setShowLeadershipModal] = useState(false);
   const [showSubmissionPopup, setShowSubmissionPopup] = useState(false);
 
+  // Show submission confirmation popup
   const handleShowPopup = () => setShowSubmissionPopup(true);
+  // Hide submission confirmation popup
   const handleAcknowledge = () => setShowSubmissionPopup(false);
 
   return (
@@ -315,6 +328,8 @@ const Resources = () => {
       }}
     >
       <Navbar />
+
+      {/* Resource boxes container */}
       <div
         style={{
           maxWidth: 960,
@@ -326,14 +341,17 @@ const Resources = () => {
           marginTop: 20,
         }}
       >
+        {/* Defender Corps Resources */}
         <ResourceBox title="Defender Corps Resources" color={colors.primaryDark}>
           <p style={{ textAlign: 'center' }}>No resources available yet.</p>
         </ResourceBox>
 
-        <ResourceBox title="Industrial Corps Resources" color={colors.alternate1}>
+        {/* Industrial Corps Resources */}
+        <ResourceBox title="Industrial Corps Resources" color={colors.gold}>
           <p style={{ textAlign: 'center' }}>No resources available yet.</p>
         </ResourceBox>
 
+        {/* Applications Box with click handler for Leadership Applications */}
         <ResourceBox
           title="Applications"
           color={colors.primaryLight}
@@ -347,14 +365,16 @@ const Resources = () => {
         </ResourceBox>
       </div>
 
+      {/* Show Leadership Application Modal */}
       {showLeadershipModal && (
         <LeadershipApplicationModal
           user={user}
           onClose={() => setShowLeadershipModal(false)}
-          onShowPopup={handleShowPopup}  // pass handler here
+          onShowPopup={handleShowPopup} // pass handler here
         />
       )}
 
+      {/* Show Submission Confirmation Popup */}
       {showSubmissionPopup && <SubmissionPopup onAcknowledge={handleAcknowledge} />}
     </div>
   );
