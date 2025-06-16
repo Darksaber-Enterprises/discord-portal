@@ -101,22 +101,4 @@ const SubmitRequest = () => {
                   padding: '8px 12px',
                   borderRadius: '6px',
                   width: '220px',
-                  textAlign: 'center',
-                  fontSize: '0.9rem',
-                  boxShadow: '0 0 6px rgba(0, 0, 0, 0.6)',
-                  zIndex: 10,
-                  pointerEvents: 'none',
-                  userSelect: 'none',
-                }}
-              >
-                {description}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default SubmitRequest;
+                 

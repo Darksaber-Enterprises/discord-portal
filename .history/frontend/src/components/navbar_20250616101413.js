@@ -11,6 +11,10 @@ const Navbar = ({ hasAuthorizedRole }) => {
     textDecoration: 'none',
     fontWeight: 'bold',
   };
+const Navbar = ({ hasAuthorizedRole }) => {
+  console.log('Navbar received hasAuthorizedRole:', hasAuthorizedRole);
+  // ...
+};
 
   const activeStyle = {
     color: colors.primary,

@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 import colors from '../colors';
 
 const Navbar = ({ hasAuthorizedRole }) => {
-  console.log('Navbar hasAuthorizedRole:', hasAuthorizedRole);
-
   const linkStyle = {
     padding: '10px 20px',
     color: colors.textLight,
@@ -38,21 +36,24 @@ const Navbar = ({ hasAuthorizedRole }) => {
         Home
       </NavLink>
 
+      {/* Show Requests only if authorized */}
       {hasAuthorizedRole && (
-        <>
-          <NavLink
-            to="/requests"
-            style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
-          >
-            Requests
-          </NavLink>
-          <NavLink
-            to="/resources"
-            style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
-          >
-            Resources
-          </NavLink>
-        </>
+        <NavLink
+          to="/requests"
+          style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
+        >
+          Requests
+        </NavLink>
+      )}
+
+      {/* Show Resources only if authorized */}
+      {hasAuthorizedRole && (
+        <NavLink
+          to="/resources"
+          style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
+        >
+          Resources
+        </NavLink>
       )}
 
       <NavLink

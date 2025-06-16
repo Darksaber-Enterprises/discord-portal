@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Navbar from '../components/navbar';
 import colors from '../colors';
 
 const SERVICE_ROLES = {
@@ -14,120 +15,105 @@ const ALL_ROLES = [RRF_ROLE, ...Object.values(SERVICE_ROLES)];
 const Requests = ({ userToken: initialToken }) => {
   const [userToken, setUserToken] = useState(initialToken || '');
   const [panel, setPanel] = useState(null);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const [currentIndustryRoles, setCurrentIndustryRoles] = useState([]);
+  const [services, setServices] = useState([]);
   const [onDutyRrf, setOnDutyRrf] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
-
-  const isOnDuty = onDutyRrf || currentIndustryRoles.length > 0;
-  const hasServiceRoles = currentIndustryRoles.length > 0;
+  const [currentIndustryRoles, setCurrentIndustryRoles] = useState([]);
 
   useEffect(() => {
-    const token = initialToken || localStorage.getItem('access_token');
-    if (!token) {
+    const stored = initialToken || localStorage.getItem('access_token');
+    if (!stored) {
       alert('You must be signed in to assign roles.');
       return;
     }
 
-    setUserToken(token);
-    fetchUserRoles(token);
+    setUserToken(stored);
+    checkUserRoles(stored);
   }, [initialToken]);
 
-  const fetchUserRoles = async (token) => {
+  const checkUserRoles = async (token) => {
     try {
       const res = await fetch('/api/discord/user', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }, // Fixed template literal
       });
 
       if (!res.ok) throw new Error('Failed to fetch user roles');
       const data = await res.json();
 
-      const userRoleIds = new Set(data.roles.map(role => role.id));
-      setOnDutyRrf(userRoleIds.has(RRF_ROLE));
+      const userRoleIds = data.roles.map((role) => role.id);
+      const hasRrf = userRoleIds.includes(RRF_ROLE);
+      setOnDutyRrf(hasRrf);
 
-      const industryRoles = Object.entries(SERVICE_ROLES)
-        .filter(([, id]) => userRoleIds.has(id))
+      const assignedIndustryRoles = Object.values(SERVICE_ROLES).filter((roleId) =>
+        userRoleIds.includes(roleId)
+      );
+
+      setCurrentIndustryRoles(assignedIndustryRoles);
+
+      const assignedServices = Object.entries(SERVICE_ROLES)
+        .filter(([name, roleId]) => assignedIndustryRoles.includes(roleId))
         .map(([name]) => name);
 
-      setCurrentIndustryRoles(industryRoles.map(name => SERVICE_ROLES[name]));
-      setSelectedServices(industryRoles);
+      setServices(assignedServices);
     } catch (err) {
       console.error('Error checking user roles:', err);
     }
   };
 
-  const toggleService = (name) => {
-    setSelectedServices((prev) =>
+  const toggleService = (name) =>
+    setServices((prev) =>
       prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
     );
-  };
 
-  const updateRoles = async (toAdd, toRemove) => {
-    if (toRemove.length) {
-      for (const roleId of toRemove) {
-        await fetch('/api/discord/remove-role', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userToken}`,
-          },
-          body: JSON.stringify({ role: roleId }),
-        });
-      }
+  const assignRoles = async (roleIds) => {
+    const res = await fetch('/api/discord/assign-roles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`, // Fixed template literal
+      },
+      body: JSON.stringify({ roles: roleIds }),
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      console.error('[ERROR] Assign roles failed:', error);
+      throw new Error('Failed to assign roles: ' + error);
     }
 
-    if (toAdd.length) {
-      await fetch('/api/discord/assign-roles', {
+    return await res.json();
+  };
+
+  const removeRoles = async (roleIds) => {
+    for (const roleId of roleIds) {
+      const res = await fetch('/api/discord/remove-role', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${userToken}`, // Fixed template literal
         },
-        body: JSON.stringify({ roles: toAdd }),
+        body: JSON.stringify({ role: roleId }),
       });
+
+      if (!res.ok) {
+        const error = await res.text();
+        console.error('[ERROR] Remove role failed:', error);
+        throw new Error('Failed to remove role: ' + error);
+      }
     }
   };
 
   const handleRrfToggle = async () => {
     try {
       if (onDutyRrf) {
-        await updateRoles([], [RRF_ROLE]);
+        await removeRoles([RRF_ROLE]);
         setOnDutyRrf(false);
         alert('You are now off duty: RRF');
       } else {
-        await updateRoles([RRF_ROLE], []);
+        await assignRoles([RRF_ROLE]);
         setOnDutyRrf(true);
         alert('You are now on duty: RRF');
       }
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-
-  const submitIndustry = async () => {
-    try {
-      const selectedIds = selectedServices.map((s) => SERVICE_ROLES[s]);
-      const toAdd = selectedIds.filter(id => !currentIndustryRoles.includes(id));
-      const toRemove = currentIndustryRoles.filter(id => !selectedIds.includes(id));
-
-      await updateRoles(toAdd, toRemove);
-
-      setCurrentIndustryRoles(selectedIds);
-      alert('Your Industry roles have been updated.');
-      setPanel(null);
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-
-  const handleGoOffDuty = async () => {
-    try {
-      await updateRoles([], ALL_ROLES);
-      setOnDutyRrf(false);
-      setSelectedServices([]);
-      setCurrentIndustryRoles([]);
-      setPanel(null);
-      alert('You are now off duty: all roles removed.');
     } catch (e) {
       alert(e.message);
     }
@@ -137,8 +123,40 @@ const Requests = ({ userToken: initialToken }) => {
     setPanel(panel === 'industry' ? null : 'industry');
   };
 
+  const submitIndustry = async () => {
+    try {
+      const selectedRoleIds = services.map((s) => SERVICE_ROLES[s]);
+      const rolesToAdd = selectedRoleIds.filter((id) => !currentIndustryRoles.includes(id));
+      const rolesToRemove = currentIndustryRoles.filter((id) => !selectedRoleIds.includes(id));
+
+      if (rolesToRemove.length > 0) await removeRoles(rolesToRemove);
+      if (rolesToAdd.length > 0) await assignRoles(rolesToAdd);
+
+      setCurrentIndustryRoles(selectedRoleIds);
+      alert('Your Industry roles have been updated.');
+      setPanel(null);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  const handleGoOffDuty = async () => {
+    try {
+      await removeRoles(ALL_ROLES);
+      setOnDutyRrf(false);
+      setServices([]);
+      setCurrentIndustryRoles([]);
+      setPanel(null);
+      alert('You are now off duty: all roles removed.');
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      
+      <Navbar />
       <div
         style={{
           width: sidebarHovered ? 260 : 50,
@@ -179,9 +197,11 @@ const Requests = ({ userToken: initialToken }) => {
                 ...toggleBtnStyle,
                 background: colors.primary,
                 color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
               }}
             >
-              {onDutyRrf ? 'RRF Off' : 'RRF On'}
+              {onDutyRrf ? 'Go off duty RRF' : 'Go on duty RRF'}
             </button>
 
             <button
@@ -190,54 +210,55 @@ const Requests = ({ userToken: initialToken }) => {
                 ...toggleBtnStyle,
                 background: colors.gold,
                 color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
               }}
             >
-              {hasServiceRoles ? 'Update Roles' : 'Industry On'}
+              Go on duty Industry
             </button>
 
-            {isOnDuty && (
-              <button
-                onClick={handleGoOffDuty}
-                style={{
-                  ...toggleBtnStyle,
-                  background: colors.accent,
-                  color: colors.textDark,
-                }}
-              >
-                Off Duty
-              </button>
-            )}
+            <button
+              onClick={handleGoOffDuty}
+              style={{
+                ...toggleBtnStyle,
+                background: colors.accent, // 
+                color: colors.textDark,
+                opacity: 1,
+                textAlign: 'center',
+              }}
+            >
+              Go Off Duty
+            </button>
 
             {panel === 'industry' && (
               <div style={{ marginTop: 20, width: '100%' }}>
                 {Object.keys(SERVICE_ROLES).map((name) => (
                   <label
                     key={name}
-                    style={{
-                      display: 'block',
-                      margin: '8px 0',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                    }}
+                    style={{ display: 'block', margin: '8px 0', cursor: 'pointer', fontWeight: 'bold' }}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedServices.includes(name)}
+                      checked={services.includes(name)}
                       onChange={() => toggleService(name)}
                       style={{ marginRight: 8 }}
                     />
                     {name}
                   </label>
                 ))}
+
                 <button onClick={submitIndustry} style={submitBtnStyle}>
-                  Submit
+                  Submit Services
                 </button>
               </div>
             )}
           </>
         )}
       </div>
-      <div style={{ flexGrow: 1, padding: 20 }}>{/* Main content */}</div>
+
+      <div style={{ flexGrow: 1, padding: 20 }}>
+        {/* Page content goes here */}
+      </div>
     </div>
   );
 };

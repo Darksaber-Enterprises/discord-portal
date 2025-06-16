@@ -18,11 +18,10 @@ import Navbar from './components/navbar';
 
 const REQUIRED_ROLE_ID = '1187153043192553522';
 
+// LayoutWrapper will re-render on route changes because of useLocation
 function LayoutWrapper({ children, hasAuthorizedRole }) {
   const location = useLocation();
   const isLanding = location.pathname === '/';
-
-  console.log('LayoutWrapper - current path:', location.pathname, 'hasAuthorizedRole:', hasAuthorizedRole);
 
   return (
     <>
@@ -37,6 +36,7 @@ function App() {
   const [hasAuthorizedRole, setHasAuthorizedRole] = useState(false);
   const [checkingRoles, setCheckingRoles] = useState(true);
 
+  // Listen for login/logout changes in localStorage
   useEffect(() => {
     const onStorageChange = () => {
       const token = localStorage.getItem('access_token');
@@ -46,6 +46,7 @@ function App() {
     return () => window.removeEventListener('storage', onStorageChange);
   }, []);
 
+  // Whenever authentication changes, fetch roles
   useEffect(() => {
     const fetchRoles = async () => {
       setCheckingRoles(true);
@@ -62,10 +63,10 @@ function App() {
         if (!res.ok) throw new Error('Failed to fetch user roles');
         const data = await res.json();
 
-        const roleIds = data.roles?.map(r => String(r.id)) || [];
-        const hasRole = roleIds.includes(REQUIRED_ROLE_ID);
-        setHasAuthorizedRole(hasRole);
+        const roleIds = data.roles?.map(r => r.id) || [];
+        setHasAuthorizedRole(roleIds.includes(REQUIRED_ROLE_ID));
       } catch (err) {
+        console.error('Failed to fetch roles:', err);
         setHasAuthorizedRole(false);
       } finally {
         setCheckingRoles(false);

@@ -1,3 +1,4 @@
+// App.js (updated)
 import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -22,6 +23,7 @@ function LayoutWrapper({ children, hasAuthorizedRole }) {
   const location = useLocation();
   const isLanding = location.pathname === '/';
 
+  // Log to debug on every route change
   console.log('LayoutWrapper - current path:', location.pathname, 'hasAuthorizedRole:', hasAuthorizedRole);
 
   return (

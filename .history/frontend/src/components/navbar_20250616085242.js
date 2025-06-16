@@ -1,10 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import colors from '../colors';
+import colors from '../colors'; // adjust path if needed
 
-const Navbar = ({ hasAuthorizedRole }) => {
-  console.log('Navbar hasAuthorizedRole:', hasAuthorizedRole);
-
+const Navbar = () => {
   const linkStyle = {
     padding: '10px 20px',
     color: colors.textLight,
@@ -37,24 +35,18 @@ const Navbar = ({ hasAuthorizedRole }) => {
       >
         Home
       </NavLink>
-
-      {hasAuthorizedRole && (
-        <>
-          <NavLink
-            to="/requests"
-            style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
-          >
-            Requests
-          </NavLink>
-          <NavLink
-            to="/resources"
-            style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
-          >
-            Resources
-          </NavLink>
-        </>
-      )}
-
+      <NavLink
+        to="/Requests"
+        style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
+      >
+        Requests
+      </NavLink>
+      <NavLink
+        to="/resources"
+        style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}
+      >
+        Resources
+      </NavLink>
       <NavLink
         to="/profile"
         style={({ isActive }) => (isActive ? { ...linkStyle, ...activeStyle } : linkStyle)}

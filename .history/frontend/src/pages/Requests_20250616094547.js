@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Navbar from '../components/navbar';
 import colors from '../colors';
 
 const SERVICE_ROLES = {
@@ -139,6 +140,7 @@ const Requests = ({ userToken: initialToken }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Navbar />
       <div
         style={{
           width: sidebarHovered ? 260 : 50,

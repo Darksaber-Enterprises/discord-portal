@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -22,8 +23,6 @@ function LayoutWrapper({ children, hasAuthorizedRole }) {
   const location = useLocation();
   const isLanding = location.pathname === '/';
 
-  console.log('LayoutWrapper - current path:', location.pathname, 'hasAuthorizedRole:', hasAuthorizedRole);
-
   return (
     <>
       {!isLanding && <Navbar hasAuthorizedRole={hasAuthorizedRole} />}
@@ -39,33 +38,32 @@ function App() {
 
   useEffect(() => {
     const onStorageChange = () => {
-      const token = localStorage.getItem('access_token');
-      setIsAuthed(!!token);
+      setIsAuthed(!!localStorage.getItem('access_token'));
     };
     window.addEventListener('storage', onStorageChange);
     return () => window.removeEventListener('storage', onStorageChange);
   }, []);
 
   useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setHasAuthorizedRole(false);
+      setCheckingRoles(false);
+      return;
+    }
+
     const fetchRoles = async () => {
-      setCheckingRoles(true);
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setHasAuthorizedRole(false);
-        setCheckingRoles(false);
-        return;
-      }
       try {
         const res = await fetch('/api/discord/user', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error('Failed to fetch user roles');
+        if (!res.ok) throw new Error('Failed to fetch user');
         const data = await res.json();
 
-        const roleIds = data.roles?.map(r => String(r.id)) || [];
-        const hasRole = roleIds.includes(REQUIRED_ROLE_ID);
-        setHasAuthorizedRole(hasRole);
+        const roleIds = data.roles?.map((r) => r.id) || [];
+        setHasAuthorizedRole(roleIds.includes(REQUIRED_ROLE_ID));
       } catch (err) {
+        console.error('Error checking role access:', err);
         setHasAuthorizedRole(false);
       } finally {
         setCheckingRoles(false);

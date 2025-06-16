@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import Navbar from '../components/navbar';
 import colors from '../colors';
 
+// Discord role IDs for service categories
 const SERVICE_ROLES = {
   Refueling: '1340563326144479283',
   Towing: '1340563283190747167',
@@ -8,6 +10,7 @@ const SERVICE_ROLES = {
   Construction: '1340563229151072387',
 };
 
+// RRF role ID
 const RRF_ROLE = '1203993365826506752';
 const ALL_ROLES = [RRF_ROLE, ...Object.values(SERVICE_ROLES)];
 
@@ -19,8 +22,8 @@ const Requests = ({ userToken: initialToken }) => {
   const [onDutyRrf, setOnDutyRrf] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
 
+  // Checks if any duty roles are active
   const isOnDuty = onDutyRrf || currentIndustryRoles.length > 0;
-  const hasServiceRoles = currentIndustryRoles.length > 0;
 
   useEffect(() => {
     const token = initialToken || localStorage.getItem('access_token');
@@ -33,6 +36,7 @@ const Requests = ({ userToken: initialToken }) => {
     fetchUserRoles(token);
   }, [initialToken]);
 
+  // Fetches user's current Discord roles
   const fetchUserRoles = async (token) => {
     try {
       const res = await fetch('/api/discord/user', {
@@ -56,12 +60,14 @@ const Requests = ({ userToken: initialToken }) => {
     }
   };
 
+  // Toggles a selected service in the checkbox list
   const toggleService = (name) => {
     setSelectedServices((prev) =>
       prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
     );
   };
 
+  // Adds and/or removes Discord roles
   const updateRoles = async (toAdd, toRemove) => {
     if (toRemove.length) {
       for (const roleId of toRemove) {
@@ -88,6 +94,7 @@ const Requests = ({ userToken: initialToken }) => {
     }
   };
 
+  // Handles toggling RRF role
   const handleRrfToggle = async () => {
     try {
       if (onDutyRrf) {
@@ -104,6 +111,7 @@ const Requests = ({ userToken: initialToken }) => {
     }
   };
 
+  // Submits selected industry service roles
   const submitIndustry = async () => {
     try {
       const selectedIds = selectedServices.map((s) => SERVICE_ROLES[s]);
@@ -120,6 +128,7 @@ const Requests = ({ userToken: initialToken }) => {
     }
   };
 
+  // Removes all active roles
   const handleGoOffDuty = async () => {
     try {
       await updateRoles([], ALL_ROLES);
@@ -133,12 +142,17 @@ const Requests = ({ userToken: initialToken }) => {
     }
   };
 
+  // Handles opening/closing the industry role panel
   const handleIndustry = () => {
     setPanel(panel === 'industry' ? null : 'industry');
   };
 
+  // Check if user already has any industry service roles
+  const hasServiceRoles = currentIndustryRoles.length > 0;
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Navbar />
       <div
         style={{
           width: sidebarHovered ? 260 : 50,
@@ -181,7 +195,7 @@ const Requests = ({ userToken: initialToken }) => {
                 color: colors.textDark,
               }}
             >
-              {onDutyRrf ? 'RRF Off' : 'RRF On'}
+              {onDutyRrf ? 'Go off duty RRF' : 'Go on duty RRF'}
             </button>
 
             <button
@@ -192,7 +206,7 @@ const Requests = ({ userToken: initialToken }) => {
                 color: colors.textDark,
               }}
             >
-              {hasServiceRoles ? 'Update Roles' : 'Industry On'}
+              {hasServiceRoles ? 'Update Industry Roles' : 'Go on duty Industry'}
             </button>
 
             {isOnDuty && (
@@ -204,7 +218,7 @@ const Requests = ({ userToken: initialToken }) => {
                   color: colors.textDark,
                 }}
               >
-                Off Duty
+                Go Off Duty
               </button>
             )}
 
@@ -230,7 +244,7 @@ const Requests = ({ userToken: initialToken }) => {
                   </label>
                 ))}
                 <button onClick={submitIndustry} style={submitBtnStyle}>
-                  Submit
+                  Submit Services
                 </button>
               </div>
             )}
@@ -242,6 +256,7 @@ const Requests = ({ userToken: initialToken }) => {
   );
 };
 
+// Shared button style
 const toggleBtnStyle = {
   width: '100%',
   padding: '12px',
@@ -255,6 +270,7 @@ const toggleBtnStyle = {
   color: '#fff',
 };
 
+// Style for submit button
 const submitBtnStyle = {
   padding: '10px 20px',
   marginTop: 12,

@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 import colors from '../colors';
 
 const Navbar = ({ hasAuthorizedRole }) => {
-  console.log('Navbar hasAuthorizedRole:', hasAuthorizedRole);
-
   const linkStyle = {
     padding: '10px 20px',
     color: colors.textLight,

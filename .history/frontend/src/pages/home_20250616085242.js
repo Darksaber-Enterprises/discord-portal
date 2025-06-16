@@ -1,4 +1,6 @@
+// home.js
 import React from 'react';
+import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import colors from '../colors';
 
@@ -17,6 +19,8 @@ const Home = () => {
         alignItems: 'center',
       }}
     >
+      <Navbar />
+
       <button
         style={{
           marginTop: '20px',

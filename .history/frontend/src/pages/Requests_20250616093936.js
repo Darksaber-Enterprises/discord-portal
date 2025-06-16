@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Navbar from '../components/navbar';
 import colors from '../colors';
 
 const SERVICE_ROLES = {
@@ -20,7 +21,6 @@ const Requests = ({ userToken: initialToken }) => {
   const [sidebarHovered, setSidebarHovered] = useState(false);
 
   const isOnDuty = onDutyRrf || currentIndustryRoles.length > 0;
-  const hasServiceRoles = currentIndustryRoles.length > 0;
 
   useEffect(() => {
     const token = initialToken || localStorage.getItem('access_token');
@@ -139,6 +139,7 @@ const Requests = ({ userToken: initialToken }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Navbar />
       <div
         style={{
           width: sidebarHovered ? 260 : 50,
@@ -181,7 +182,7 @@ const Requests = ({ userToken: initialToken }) => {
                 color: colors.textDark,
               }}
             >
-              {onDutyRrf ? 'RRF Off' : 'RRF On'}
+              {onDutyRrf ? 'Go off duty RRF' : 'Go on duty RRF'}
             </button>
 
             <button
@@ -192,7 +193,7 @@ const Requests = ({ userToken: initialToken }) => {
                 color: colors.textDark,
               }}
             >
-              {hasServiceRoles ? 'Update Roles' : 'Industry On'}
+              Go on duty Industry
             </button>
 
             {isOnDuty && (
@@ -204,7 +205,7 @@ const Requests = ({ userToken: initialToken }) => {
                   color: colors.textDark,
                 }}
               >
-                Off Duty
+                Go Off Duty
               </button>
             )}
 
@@ -230,7 +231,7 @@ const Requests = ({ userToken: initialToken }) => {
                   </label>
                 ))}
                 <button onClick={submitIndustry} style={submitBtnStyle}>
-                  Submit
+                  Submit Services
                 </button>
               </div>
             )}
