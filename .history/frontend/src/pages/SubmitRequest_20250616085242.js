@@ -1,12 +1,11 @@
 // SubmitRequest.js
-// React component to allow users to select from several predefined request types.
-// Displays buttons with hover tooltips describing each request type.
 
 import React, { useState } from 'react';
 import Navbar from '../components/navbar';
 
+// SubmitRequest Component - lets users select a request type
 const SubmitRequest = () => {
-  // List of request types and their descriptions shown as tooltips
+  // Request types and their descriptions
   const options = [
     {
       name: 'Rapid Response Force',
@@ -30,13 +29,12 @@ const SubmitRequest = () => {
     },
   ];
 
-  // Track which button is hovered to show tooltip
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null); // Tracks hovered button index for tooltip display
 
-  // Handle button click (currently alerts selection)
+  // Handler when user clicks a request type option
   const handleOptionClick = (option) => {
     alert(`You selected: ${option}`);
-    // TODO: Replace alert with actual form or navigation
+    // TODO: Replace alert with form or page navigation
   };
 
   return (
@@ -54,13 +52,13 @@ const SubmitRequest = () => {
         position: 'relative',
       }}
     >
-      {/* Navbar component */}
+      {/* Navigation bar */}
       <Navbar />
 
       <h2 style={{ textAlign: 'center' }}>Select a Request Type</h2>
       <p style={{ textAlign: 'center' }}>Please choose one of the following:</p>
 
-      {/* Buttons container */}
+      {/* Container for request option buttons */}
       <div
         style={{
           display: 'flex',
@@ -78,7 +76,7 @@ const SubmitRequest = () => {
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
-            {/* Button for each request */}
+            {/* Button for each request option */}
             <button
               onClick={() => handleOptionClick(name)}
               style={{
@@ -103,7 +101,7 @@ const SubmitRequest = () => {
               {name}
             </button>
 
-            {/* Tooltip with description shown on hover */}
+            {/* Tooltip shown when hovering over a button */}
             {hoveredIndex === index && (
               <div
                 style={{
