@@ -125,9 +125,13 @@ app.get('/api/discord/user', async (req, res) => {
       })
       .filter(r => !/^[-_]{3,}/.test(r.name)); // Remove roles that start with --- or ___ (likely hidden roles)
 
+    // ADDED: Get join date (joined_at) from member object
+    const joined_at = member.joined_at;
+
     res.json({
       user,
       roles: userRoles.sort((a, b) => a.name.localeCompare(b.name)),
+      joined_at // Return join date to client
     });
   } catch (err) {
     console.error('Error fetching user data:', err);
